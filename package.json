@@ -1,0 +1,38 @@
+{
+  "name": "AlpinEvents",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "start": "react-native start",
+    "test": "jest",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "js-to-ts-converter": "^0.18.2",
+    "react": "17.0.2",
+    "react-native": "0.68.2",
+    "react-native-vector-icons": "^9.1.0",
+    "uuidv4": "^6.2.13"
+  },
+  "devDependencies": {
+    "@babel/core": "7.17.12",
+    "@babel/runtime": "7.17.9",
+    "@react-native-community/eslint-config": "2.0.0",
+    "@types/jest": "^27.5.1",
+    "@types/react": "^18.0.9",
+    "@types/react-native": "^0.67.7",
+    "@types/react-native-vector-icons": "^6.4.10",
+    "@types/react-test-renderer": "^18.0.0",
+    "babel-jest": "26.6.3",
+    "eslint": "7.32.0",
+    "jest": "26.6.3",
+    "metro-react-native-babel-preset": "0.67.0",
+    "react-test-renderer": "17.0.2",
+    "typescript": "^4.7.2"
+  },
+  "jest": {
+    "preset": "react-native"
+  }
+}
