@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "998781478960",
+    "project_id": "alpineventsbackend",
+    "storage_bucket": "alpineventsbackend.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:998781478960:android:8038fd7711608d64c425f5",
+        "android_client_info": {
+          "package_name": "com.alpinevents"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "998781478960-ge65diir638uar8en99149er6b3011ea.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.alpinevents",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "998781478960-tie73rdv8skbs98vu4smpu0bgdn5nfj2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCB4vAWHmLqKDmz45c-5HppRCILI2pUdfo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "998781478960-tie73rdv8skbs98vu4smpu0bgdn5nfj2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
