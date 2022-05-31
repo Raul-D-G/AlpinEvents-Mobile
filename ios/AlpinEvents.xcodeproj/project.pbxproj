@@ -30,6 +30,7 @@
 		7E373FFAB23B4F4F9685416C /* Octicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5129058BE73544728BAEE2B1 /* Octicons.ttf */; };
 		9A8DCA47E4424B2CA9211AD3 /* SimpleLineIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 96A2C3A691F9476D824FE7CB /* SimpleLineIcons.ttf */; };
 		9279F28119984D9E95B15301 /* Zocial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5726F1CDDE7A4238A290A438 /* Zocial.ttf */; };
+		43FB210EA1E24C9FACA99056 /* DancingScript-VariableFont_wght.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AB7278C82F274BAB899C292C /* DancingScript-VariableFont_wght.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -76,6 +77,7 @@
 		5129058BE73544728BAEE2B1 /* Octicons.ttf */ = {isa = PBXFileReference; name = "Octicons.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/Octicons.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		96A2C3A691F9476D824FE7CB /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; name = "SimpleLineIcons.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		5726F1CDDE7A4238A290A438 /* Zocial.ttf */ = {isa = PBXFileReference; name = "Zocial.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/Zocial.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		AB7278C82F274BAB899C292C /* DancingScript-VariableFont_wght.ttf */ = {isa = PBXFileReference; name = "DancingScript-VariableFont_wght.ttf"; path = "../assets/fonts/DancingScript-VariableFont_wght.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -200,6 +202,7 @@
 				5129058BE73544728BAEE2B1 /* Octicons.ttf */,
 				96A2C3A691F9476D824FE7CB /* SimpleLineIcons.ttf */,
 				5726F1CDDE7A4238A290A438 /* Zocial.ttf */,
+				AB7278C82F274BAB899C292C /* DancingScript-VariableFont_wght.ttf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -317,6 +320,7 @@
 				7E373FFAB23B4F4F9685416C /* Octicons.ttf in Resources */,
 				9A8DCA47E4424B2CA9211AD3 /* SimpleLineIcons.ttf in Resources */,
 				9279F28119984D9E95B15301 /* Zocial.ttf in Resources */,
+				43FB210EA1E24C9FACA99056 /* DancingScript-VariableFont_wght.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

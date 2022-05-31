@@ -15,7 +15,7 @@ const HomeScreen: FC<any> = ({navigation}) => {
 
   return (
     <View style={styles.container}>
-      <Text>Email: {auth().currentUser?.email}</Text>
+      <Text style={styles.text}>Email: {auth().currentUser?.email}</Text>
       <TouchableOpacity onPress={handleSignOut} style={styles.button}>
         <Text style={styles.buttonText}>Sign out</Text>
       </TouchableOpacity>
@@ -43,5 +43,8 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: '700',
     fontSize: 16,
+  },
+  text: {
+    color: 'black',
   },
 });

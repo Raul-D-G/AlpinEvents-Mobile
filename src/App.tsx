@@ -1,34 +1,77 @@
-import React from 'react';
-import {View, Text, Image, StyleSheet} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {Alert, StyleSheet} from 'react-native';
 import LoginScreen from './screens/LoginScreen';
-import HomeScreen from './screens/HomeScreen';
 
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
+import MainScreen from './screens/MainScreen';
 
 export type RootStackParamList = {
   LoginScreen: undefined;
-  HomeScreen: undefined;
+  MainScreen: undefined;
 };
 
+import SplashScreen from 'react-native-splash-screen';
+import {checkConnected} from './utils/Functions';
+import NoConnectionScreen from './screens/NoConnectionScreen';
+
 const Stack = createStackNavigator<RootStackParamList>();
+import NetInfo from '@react-native-community/netinfo';
 
 const App = () => {
-  return (
+  const [connectStatus, setConnectStatus] = useState(false);
+
+  const checkIfConnected = async () => {
+    const res = await checkConnected();
+
+    if (res.isConnected) {
+      setConnectStatus(res.isConnected);
+    } else {
+      setConnectStatus(false);
+      Alert.alert('Eroare!', 'Nu aveti acces la internet', [
+        {
+          text: 'Ok',
+          onPress: () => {},
+        },
+      ]);
+    }
+  };
+
+  useEffect(() => {
+    NetInfo.addEventListener(state => {
+      if (state.isConnected) {
+        setConnectStatus(state.isConnected);
+      } else {
+        setConnectStatus(false);
+      }
+    });
+
+    setTimeout(() => {
+      SplashScreen.hide();
+    }, 100);
+  }, []);
+
+  return connectStatus ? (
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen
           name="LoginScreen"
           component={LoginScreen}
-          options={{title: 'Welcome'}}
+          options={{
+            header: () => null,
+          }}
         />
         <Stack.Screen
-          name="HomeScreen"
-          component={HomeScreen}
-          options={{title: 'Welcome'}}
+          name="MainScreen"
+          component={MainScreen}
+          options={{
+            header: () => null,
+          }}
         />
       </Stack.Navigator>
     </NavigationContainer>
+  ) : (
+    <NoConnectionScreen checkConnected={checkIfConnected} />
   );
 };
 

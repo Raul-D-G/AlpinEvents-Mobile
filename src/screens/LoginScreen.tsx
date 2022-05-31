@@ -6,11 +6,13 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Alert,
 } from 'react-native';
 
 import auth from '@react-native-firebase/auth';
 import SocialButton from '../components/SocialButton';
 import {GoogleSignin} from '@react-native-community/google-signin';
+import {ScrollView} from 'react-native-gesture-handler';
 
 const LoginScreen: FC<any> = ({navigation}) => {
   const [email, setEmail] = useState('');
@@ -19,7 +21,7 @@ const LoginScreen: FC<any> = ({navigation}) => {
   useEffect(() => {
     const unsubscribe = auth().onAuthStateChanged((user: any) => {
       if (user) {
-        navigation.navigate('HomeScreen');
+        navigation.replace('MainScreen');
       }
     });
 
@@ -32,8 +34,21 @@ const LoginScreen: FC<any> = ({navigation}) => {
   }, []);
 
   const handleSignUp = () => {
-    console.log(email);
-    console.log(password);
+    if (!email) {
+      Alert.alert(
+        'Atentie!',
+        'Trebuie sa introduceti o adresa de email valida',
+        [
+          {
+            text: 'Ok',
+            onPress: () => {
+              setEmail('');
+              setPassword('');
+            },
+          },
+        ],
+      );
+    }
 
     auth()
       .createUserWithEmailAndPassword(email, password)
@@ -45,13 +60,55 @@ const LoginScreen: FC<any> = ({navigation}) => {
   };
 
   const handleLogin = () => {
-    auth()
-      .signInWithEmailAndPassword(email, password)
-      .then((userCredentials: {user: any}) => {
-        const user = userCredentials.user;
-        console.log('Logged in with:', user.email);
-      })
-      .catch((error: {message: any}) => console.log(error.message));
+    if (!email) {
+      Alert.alert('Atentie!', 'Trebuie sa introduceti o adresa de email', [
+        {
+          text: 'Ok',
+          onPress: () => {
+            setEmail('');
+            setPassword('');
+          },
+        },
+      ]);
+    } else {
+      auth()
+        .signInWithEmailAndPassword(email, password)
+        .then((userCredentials: {user: any}) => {
+          const user = userCredentials.user;
+          console.log('Logged in with:', user.email);
+        })
+        .catch((error: {message: string}) => {
+          const message = error.message.slice(
+            1,
+            error.message.lastIndexOf(']'),
+          );
+
+          if (message === 'auth/invalid-email') {
+            Alert.alert('Atentie!', 'Indroduceti o adresa de email valida!', [
+              {
+                text: 'Ok',
+                onPress: () => {
+                  setEmail('');
+                  setPassword('');
+                },
+              },
+            ]);
+          }
+          Alert.alert(
+            'Atentie!',
+            error.message.slice(error.message.lastIndexOf(']') + 1),
+            [
+              {
+                text: 'Ok',
+                onPress: () => {
+                  setEmail('');
+                  setPassword('');
+                },
+              },
+            ],
+          );
+        });
+    }
   };
 
   const googleLogin = async () => {
@@ -67,50 +124,58 @@ const LoginScreen: FC<any> = ({navigation}) => {
   };
 
   return (
-    <KeyboardAvoidingView style={styles.container} behavior="padding">
-      <View style={styles.inputContainer}>
-        <TextInput
-          placeholder="Email"
-          value={email}
-          onChangeText={text => setEmail(text)}
-          style={styles.input}
-        />
-        <TextInput
-          placeholder="Password"
-          value={password}
-          onChangeText={text => setPassword(text)}
-          style={styles.input}
-          secureTextEntry
-        />
-      </View>
+    <ScrollView contentContainerStyle={styles.scrollView}>
+      <KeyboardAvoidingView style={styles.container} behavior="padding">
+        <View style={styles.inputContainer}>
+          <TextInput
+            placeholder="Email"
+            placeholderTextColor={'black'}
+            value={email}
+            onChangeText={text => setEmail(text)}
+            style={styles.input}
+          />
+          <TextInput
+            placeholder="Password"
+            placeholderTextColor={'black'}
+            value={password}
+            onChangeText={text => setPassword(text)}
+            style={styles.input}
+            secureTextEntry
+          />
+        </View>
 
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity onPress={handleLogin} style={styles.button}>
-          <Text style={styles.buttonText}>Login</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={handleSignUp}
-          style={[styles.button, styles.buttonOutline]}>
-          <Text style={styles.buttonOutlineText}>Register</Text>
-        </TouchableOpacity>
-      </View>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity onPress={handleLogin} style={styles.button}>
+            <Text style={styles.buttonText}>Login</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={handleSignUp}
+            style={[styles.button, styles.buttonOutline]}>
+            <Text style={styles.buttonOutlineText}>Register</Text>
+          </TouchableOpacity>
+        </View>
 
-      <View>
-        <SocialButton
-          buttonTitle="Sign In with Google"
-          btnType="google"
-          color="#de4d41"
-          backgroundColor="#f5e7ea"
-          onPress={() => googleLogin()}
-        />
-      </View>
-    </KeyboardAvoidingView>
+        <View>
+          <SocialButton
+            buttonTitle="Sign In with Google"
+            btnType="google"
+            color="#de4d41"
+            backgroundColor="#f5e7ea"
+            onPress={() => googleLogin()}
+          />
+        </View>
+      </KeyboardAvoidingView>
+    </ScrollView>
   );
 };
 
 export default LoginScreen;
 
 const styles = StyleSheet.create({
+  scrollView: {
+    flexGrow: 1,
+    justifyContent: 'center',
+  },
   container: {
     flex: 1,
     justifyContent: 'center',
@@ -118,6 +183,7 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     width: '80%',
+    paddingTop: 20,
   },
   input: {
     backgroundColor: 'white',
@@ -125,6 +191,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 10,
     marginTop: 5,
+    color: 'black',
   },
   buttonContainer: {
     width: '60%',

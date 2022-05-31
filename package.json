@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@react-native-community/google-signin": "^5.0.0",
+    "@react-native-community/netinfo": "^8.3.1",
     "@react-native-firebase/app": "^14.10.1",
     "@react-native-firebase/auth": "^14.10.1",
     "@react-navigation/native": "^6.0.10",
@@ -18,9 +19,13 @@
     "js-to-ts-converter": "^0.18.2",
     "react": "17.0.2",
     "react-native": "0.68.2",
+    "react-native-gesture": "^0.2.0",
     "react-native-gesture-handler": "^2.4.2",
+    "react-native-reanimated": "^2.8.0",
+    "react-native-redash": "^16.3.0",
     "react-native-safe-area-context": "^4.2.5",
     "react-native-screens": "^3.13.1",
+    "react-native-splash-screen": "^3.3.0",
     "react-native-vector-icons": "^9.1.0",
     "uuidv4": "^6.2.13"
   },
