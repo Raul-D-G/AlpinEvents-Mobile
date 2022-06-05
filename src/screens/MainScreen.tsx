@@ -1,9 +1,11 @@
 import React, {FC, useEffect, useRef} from 'react';
 import {Animated, Dimensions, Text, TouchableOpacity, View} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {useSelector} from 'react-redux';
 
 // Logo....
 import logo from '../../assets/logoApp.png';
+import {ApplicationState} from '../redux';
 import HomeScreen from './HomeScreen';
 
 const BGColor = '#4D4A95';
@@ -28,8 +30,11 @@ const MainScreen: FC<any> = ({navigation}) => {
     new Animated.Value(Dimensions.get('window').height),
   ).current;
 
+  const {user} = useSelector((state: ApplicationState) => state.userReducer);
+
   // Animation Done....
   useEffect(() => {
+    console.log('ASDASDASD', user);
     // Starting Animation after 500ms....
     setTimeout(() => {
       // Parallel Animation...

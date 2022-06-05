@@ -1,4 +1,4 @@
-import React, {useEffect, useState, FC} from 'react';
+import React, {useEffect, FC} from 'react';
 import {
   KeyboardAvoidingView,
   StyleSheet,
@@ -13,14 +13,27 @@ import auth from '@react-native-firebase/auth';
 import SocialButton from '../components/SocialButton';
 import {GoogleSignin} from '@react-native-community/google-signin';
 import {ScrollView} from 'react-native-gesture-handler';
+import {useDispatch, useSelector} from 'react-redux';
+
+import {actionCreators, ApplicationState} from '../redux';
+import {bindActionCreators} from 'redux';
 
 const LoginScreen: FC<any> = ({navigation}) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const {email, password, user} = useSelector(
+    (state: ApplicationState) => state.userReducer,
+  );
+
+  const dispatch = useDispatch();
+
+  const {setEmail, setPassword, onLogin} = bindActionCreators(
+    actionCreators,
+    dispatch,
+  );
 
   useEffect(() => {
     const unsubscribe = auth().onAuthStateChanged((user: any) => {
       if (user) {
+        onLogin(user.email, user.displayName, user.uid);
         navigation.replace('MainScreen');
       }
     });

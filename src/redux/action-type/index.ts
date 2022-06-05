@@ -1,0 +1,6 @@
+export enum ActionType {
+  ON_LOGIN = 'ON_LOGIN',
+  ON_ERROR = 'ON_ERROR',
+  SET_USER_EMAIL = 'SET_USER_EMAIL',
+  SET_USER_PASSWORD = 'SET_USER_PASSWORD',
+}

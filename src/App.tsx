@@ -17,6 +17,14 @@ import NoConnectionScreen from './screens/NoConnectionScreen';
 
 const Stack = createStackNavigator<RootStackParamList>();
 import NetInfo from '@react-native-community/netinfo';
+import {Provider} from 'react-redux';
+import {store} from './redux';
+
+import {LogBox} from 'react-native';
+
+LogBox.ignoreLogs([
+  'Non-serializable values were found in the navigation state',
+]);
 
 const App = () => {
   const [connectStatus, setConnectStatus] = useState(false);
@@ -52,24 +60,26 @@ const App = () => {
   }, []);
 
   return connectStatus ? (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen
-          name="LoginScreen"
-          component={LoginScreen}
-          options={{
-            header: () => null,
-          }}
-        />
-        <Stack.Screen
-          name="MainScreen"
-          component={MainScreen}
-          options={{
-            header: () => null,
-          }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <Provider store={store}>
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen
+            name="LoginScreen"
+            component={LoginScreen}
+            options={{
+              header: () => null,
+            }}
+          />
+          <Stack.Screen
+            name="MainScreen"
+            component={MainScreen}
+            options={{
+              header: () => null,
+            }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </Provider>
   ) : (
     <NoConnectionScreen checkConnected={checkIfConnected} />
   );
