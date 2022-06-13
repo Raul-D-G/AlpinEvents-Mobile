@@ -19,21 +19,23 @@ import {actionCreators, ApplicationState} from '../redux';
 import {bindActionCreators} from 'redux';
 
 const LoginScreen: FC<any> = ({navigation}) => {
-  const {email, password, user} = useSelector(
+  const {email, password} = useSelector(
     (state: ApplicationState) => state.userReducer,
   );
 
   const dispatch = useDispatch();
 
-  const {setEmail, setPassword, onLogin} = bindActionCreators(
+  const {getEvents, setEmail, setPassword, onLogin} = bindActionCreators(
     actionCreators,
     dispatch,
   );
 
   useEffect(() => {
-    const unsubscribe = auth().onAuthStateChanged((user: any) => {
+    const unsubscribe = auth().onAuthStateChanged(async (user: any) => {
       if (user) {
-        onLogin(user.email, user.displayName, user.uid);
+        const idToken = await user.getIdToken(true);
+        onLogin(user.email, user.displayName, user.uid, idToken);
+        getEvents(user.uid, idToken);
         navigation.replace('MainScreen');
       }
     });

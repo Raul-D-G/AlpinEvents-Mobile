@@ -4,6 +4,7 @@ export interface UserModel {
   email: string;
   displayName: string;
   uid: string;
+  idToken: string;
 }
 
 export interface LoginAction {

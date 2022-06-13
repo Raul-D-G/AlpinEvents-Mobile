@@ -8,13 +8,13 @@ import {
   Text,
 } from 'react-native';
 
-import img from '../../assets/no_connections.png';
+import image from '../../assets/no_connections.png';
 
 const NoConnectionScreen: FC<any> = ({checkConnected}) => {
   return (
     <View style={styles.container}>
       <Image
-        source={img}
+        source={image}
         style={{width: '30%', height: '30%'}}
         resizeMode="contain"
       />
