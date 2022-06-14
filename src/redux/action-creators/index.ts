@@ -1,3 +1,4 @@
+import {MarkerModel, CalendarAction} from './../actions/calendarActions';
 import {EvenimentModel} from './../actions/evenimentActions';
 import {Dispatch} from 'redux';
 import {BASE_URL} from '../../utils/AppConst';
@@ -184,6 +185,16 @@ export const setEventUid = (uid: string) => {
     dispatch({
       type: ActionType.SET_EVENT_UID,
       payload: uid,
+    });
+  };
+};
+
+// CALENDAR
+export const setMarker = (marker: MarkerModel) => {
+  return (dispatch: Dispatch<CalendarAction>) => {
+    dispatch({
+      type: ActionType.SET_MARKED_DATE_CALENDAR,
+      payload: marker,
     });
   };
 };

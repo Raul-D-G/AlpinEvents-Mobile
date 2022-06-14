@@ -23,6 +23,7 @@
     "js-to-ts-converter": "^0.18.2",
     "react": "17.0.2",
     "react-native": "0.68.2",
+    "react-native-calendars": "^1.1284.0",
     "react-native-check-box": "^2.1.7",
     "react-native-date-picker": "^4.2.2",
     "react-native-gesture": "^0.2.0",

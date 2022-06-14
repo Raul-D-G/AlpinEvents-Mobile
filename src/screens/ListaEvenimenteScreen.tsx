@@ -7,7 +7,6 @@ import {
   View,
 } from 'react-native';
 import React, {FC, useEffect, useRef} from 'react';
-import {bindActionCreators} from 'redux';
 import {actionCreators, ApplicationState} from '../redux';
 import {useDispatch, useSelector} from 'react-redux';
 
@@ -20,12 +19,13 @@ import BG_IMG from '../../assets/logoApp-removebg-preview.png';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import {formateazaDataToString} from '../utils/Functions';
 import {TIPURI_EVENIMENTE} from '../utils/AppConst';
-
-export type RootStackParamList = {
-  EvenimentScreen: undefined;
-};
+import {EvenimentModel} from '../redux/actions/evenimentActions';
+import {bindActionCreators} from 'redux';
 
 const ListaEvenimenteScreen: FC<any> = ({navigation}) => {
+  const dispatch = useDispatch();
+  const {setEvents} = bindActionCreators(actionCreators, dispatch);
+
   const {evenimente} = useSelector(
     (state: ApplicationState) => state.evenimenteReducer,
   );
@@ -38,22 +38,34 @@ const ListaEvenimenteScreen: FC<any> = ({navigation}) => {
     navigation.navigate('AddEvenimentScreen');
   };
 
-  const test = () => {
-    console.log(evenimente);
+  const detalii = (eveniment: EvenimentModel) => {
+    navigation.navigate('DetaliiEvenimentScreen', {eveniment: eveniment});
   };
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      evenimente.sort((a: EvenimentModel, b: EvenimentModel) => {
+        return a.data.getTime() - b.data.getTime();
+      });
+      setEvents(evenimente);
+    });
+
+    // Return the function to unsubscribe from the event so it gets removed on unmount
+    return unsubscribe;
+  }, [navigation, evenimente]);
 
   return (
     <View style={{flex: 1}}>
       <Image source={BG_IMG} style={styles.logo}></Image>
 
       <Animated.FlatList
+        keyboardShouldPersistTaps="handled"
         data={evenimente}
-        keyboardShouldPersistTaps="always"
         onScroll={Animated.event(
           [{nativeEvent: {contentOffset: {y: scrollY}}}],
           {useNativeDriver: false},
         )}
-        keyExtractor={item => item.id}
+        keyExtractor={(item: EvenimentModel) => item.id}
         contentContainerStyle={{
           padding: 20,
           paddingTop: 80,
@@ -69,7 +81,7 @@ const ListaEvenimenteScreen: FC<any> = ({navigation}) => {
             -1,
             0,
             ITEM_SIZE * index,
-            ITEM_SIZE * (index + 0.8),
+            ITEM_SIZE * (index + 1),
           ];
 
           const scale = scrollY.interpolate({
@@ -84,7 +96,7 @@ const ListaEvenimenteScreen: FC<any> = ({navigation}) => {
           return (
             <TouchableOpacity
               onPress={() => {
-                test();
+                detalii(item);
               }}>
               <Animated.View
                 style={[
@@ -110,14 +122,16 @@ const ListaEvenimenteScreen: FC<any> = ({navigation}) => {
                   <Image source={petrecereImg} style={styles.image} />
                 ) : null}
 
-                {/* <Image source={{uri: item.image}} style={styles.image} /> */}
-
                 <View>
                   <Text style={styles.nume}>{item.nume}</Text>
+
+                  <Text>Organizator: {item.organizator}</Text>
                   <Text style={styles.data}>
-                    {formateazaDataToString(item.data)}
+                    Dată: {formateazaDataToString(item.data)}
                   </Text>
-                  <Text style={styles.nrPersoane}>{item.nrPersoane}</Text>
+                  <Text style={styles.nrPersoane}>
+                    Număr persoane: {item.nrPersoane}
+                  </Text>
                 </View>
               </Animated.View>
             </TouchableOpacity>
@@ -163,7 +177,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   nume: {
-    fontSize: 22,
+    fontSize: 20,
+    textAlign: 'center',
   },
   data: {
     fontSize: 18,
@@ -182,8 +197,8 @@ const styles = StyleSheet.create({
   },
   animatedView: {
     flexDirection: 'row',
-    padding: 20,
-    marginBottom: 20,
+    padding: 18,
+    marginBottom: 18,
     backgroundColor: 'white',
     borderRadius: 20,
     width: '100%',
@@ -193,7 +208,12 @@ const styles = StyleSheet.create({
   image: {
     width: 70,
     height: 70,
-    borderRadius: 70,
+    borderRadius: 60,
     marginRight: 10,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignContent: 'center',
   },
 });

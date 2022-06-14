@@ -3,12 +3,14 @@ import React, {FC} from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 import ListaEvenimenteScreen from './ListaEvenimenteScreen';
 import AddEvenimentScreen from './AddEvenimentScreen';
+import DetaliiEvenimentScreen from './DetaliiEvenimentScreen';
 
-export type RootStackParamList = {
+type ListaEStackParamList = {
   AddEvenimentScreen: undefined;
   ListaEvenimenteScreen: undefined;
+  DetaliiEvenimentScreen: undefined;
 };
-const Stack = createStackNavigator<RootStackParamList>();
+const Stack = createStackNavigator<ListaEStackParamList>();
 
 const ListaNavigatorScreen: FC<any> = ({navigation}) => {
   return (
@@ -24,6 +26,14 @@ const ListaNavigatorScreen: FC<any> = ({navigation}) => {
       <Stack.Screen
         name="AddEvenimentScreen"
         component={AddEvenimentScreen}
+        options={{
+          header: () => null,
+        }}
+      />
+
+      <Stack.Screen
+        name="DetaliiEvenimentScreen"
+        component={DetaliiEvenimentScreen}
         options={{
           header: () => null,
         }}

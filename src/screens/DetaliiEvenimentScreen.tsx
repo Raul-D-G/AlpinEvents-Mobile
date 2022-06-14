@@ -1,4 +1,4 @@
-import React, {useState, FC} from 'react';
+import React, {useState, FC, useEffect} from 'react';
 import {
   StyleSheet,
   Text,
@@ -8,7 +8,6 @@ import {
   KeyboardAvoidingView,
   Keyboard,
 } from 'react-native';
-import {TextInput} from 'react-native-gesture-handler';
 import {useDispatch, useSelector} from 'react-redux';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -16,12 +15,7 @@ import DatePicker from 'react-native-date-picker';
 import {actionCreators, ApplicationState} from '../redux';
 import {bindActionCreators} from 'redux';
 import SelectDropdown from 'react-native-select-dropdown';
-import {
-  BASE_URL,
-  COLORS,
-  TIPURI_EVENIMENTE,
-  TIPURI_MENIU,
-} from '../utils/AppConst';
+import {BASE_URL, COLORS, TIPURI_MENIU} from '../utils/AppConst';
 import NumericInput from 'react-native-numeric-input';
 import CheckBox from '@react-native-community/checkbox';
 import {formateazaDataToString} from '../utils/Functions';
@@ -29,30 +23,18 @@ import axios from 'axios';
 import {EvenimentModel} from '../redux/actions/evenimentActions';
 import Loader from '../components/Loader';
 
-const Eveniment: FC<any> = ({navigation}) => {
+const DetaliiEvenimentScreen: FC<any> = ({route, navigation}) => {
   const dispatch = useDispatch();
-  const {
-    setEventOrganizator,
-    setEventNume,
-    setEventData,
-    setEventNrPersoane,
-    setEventIdMeniu,
-    setEventAvans,
-    setEventImg,
-    setEventPret,
-    setEvent,
-    setEvents,
-    setEventUid,
-  } = bindActionCreators(actionCreators, dispatch);
-
-  const {organizator, nume, data, nrPersoane, idMeniu, avans, plata} =
-    useSelector((state: ApplicationState) => state.evenimentReducer);
-
+  const {setEventData, setEventPret, setEvent, setEvents} = bindActionCreators(
+    actionCreators,
+    dispatch,
+  );
   const {evenimente} = useSelector(
     (state: ApplicationState) => state.evenimenteReducer,
   );
-
   const {user} = useSelector((state: ApplicationState) => state.userReducer);
+
+  const eveniment = route.params.eveniment;
 
   const [errors, setErrors] = useState({
     organizator: null,
@@ -61,7 +43,7 @@ const Eveniment: FC<any> = ({navigation}) => {
     nrPersoane: null,
     idMeniu: null,
   });
-  const [isValid, setIsValid] = useState(false);
+  const [isValid, setIsValid] = useState(true);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = React.useState(false);
 
@@ -71,91 +53,54 @@ const Eveniment: FC<any> = ({navigation}) => {
 
     setIsValid(true);
 
-    if (!organizator || organizator.length <= 3) {
-      handleError(
-        'Acest câmp este obligatoriu (mai mult de 3 caractere)',
-        'organizator',
-      );
-      setEventOrganizator('');
-      setIsValid(false);
-      valid = false;
-    }
-    if (nume === '') {
-      handleError('Alege tipul evenimentului!', 'nume');
-      setEventNume('');
-      setIsValid(false);
-      valid = false;
-    }
     // TODO
-    if (!data) {
+    if (!eveniment.data) {
       handleError('Alege data evenimentului!', 'data');
       setEventData(new Date());
       setIsValid(false);
       valid = false;
     }
-    if (nrPersoane === 0) {
+    if (eveniment.nrPersoane === 0) {
       handleError('Salvează numărul de invitați', 'nrPersoane');
       // setEventNrPersoane(0);
       setIsValid(false);
       valid = false;
     }
-    if (idMeniu === 0) {
+    if (eveniment.idMeniu === 0) {
       handleError('Alege meniul pentru eveniment', 'idMeniu');
       // setEventIdMeniu(0);
       setIsValid(false);
       valid = false;
     }
+
     return valid;
   };
 
-  const handleError = (error: string | null, input: string) => {
-    setErrors(prevState => ({...prevState, [input]: error}));
-  };
-
-  const handleAddEvent = () => {
+  const handleEditEvent = () => {
     if (validate()) {
       setLoading(true);
 
-      const pretLocal = nrPersoane * TIPURI_MENIU[idMeniu - 1].pret;
+      const pretLocal =
+        eveniment.nrPersoane * TIPURI_MENIU[eveniment.idMeniu - 1].pret;
       setEventPret(pretLocal);
 
-      let img: string = '../../assets/nunta.jpg';
-      TIPURI_EVENIMENTE.forEach(eveniment => {
-        if (eveniment.tip === nume) {
-          setEventImg(eveniment.image);
-          img = eveniment.image;
-        }
-      });
-
       let newEvenimnet = {
-        organizator: organizator,
-        nume: nume,
-        data: data,
-        nrPersoane: nrPersoane,
-        idMeniu: idMeniu,
+        organizator: eveniment.organizator,
+        nume: eveniment.nume,
+        data: eveniment.data,
+        nrPersoane: eveniment.nrPersoane,
+        idMeniu: eveniment.idMeniu,
         pret: pretLocal,
-        avans: avans,
-        plata: plata,
-        image: img,
-        uid: user.uid,
-        id: '',
+        avans: eveniment.avans,
+        plata: eveniment.plata,
+        image: eveniment.image,
+        uid: eveniment.uid,
+        id: eveniment.id,
       };
 
       setEvent(newEvenimnet);
 
-      setEventOrganizator('');
-      setEventNume('');
-      setEventData(new Date());
-      setEventNrPersoane(0);
-      setEventIdMeniu(0);
-      setEventPret(0);
-      setEventAvans(false);
-      setEventUid('');
-      setEventImg('');
-
-      const postEvent = {
-        organizator: newEvenimnet.organizator,
-        nume: newEvenimnet.nume,
+      const putEvent = {
         data: newEvenimnet.data.toISOString(),
         nrPersoane: newEvenimnet.nrPersoane,
         idMeniu: newEvenimnet.idMeniu,
@@ -163,36 +108,31 @@ const Eveniment: FC<any> = ({navigation}) => {
         avans: newEvenimnet.avans,
         plata: newEvenimnet.plata,
         image: newEvenimnet.image,
-        uid: newEvenimnet.uid,
+        id: newEvenimnet.id,
       };
 
       axios
-        .post(BASE_URL + 'eveniment', postEvent, {
+        .put(BASE_URL + `eveniment/${eveniment.id}`, putEvent, {
           headers: {
             'Content-Type': 'application/json',
             Authorization: 'Bearer ' + user.idToken,
           },
         })
         .then(res => {
-          console.log(res.data);
+          evenimente.forEach(event => {
+            if (event.id === eveniment.id) {
+              event.data = newEvenimnet.data;
+              event.nrPersoane = putEvent.nrPersoane;
+              event.idMeniu = putEvent.idMeniu;
+              event.avans = putEvent.avans;
+              event.plata = putEvent.plata;
+              event.image = putEvent.image;
+            }
+          });
 
-          const newEvent: EvenimentModel = {
-            organizator: postEvent.organizator,
-            nume: postEvent.nume,
-            data: new Date(postEvent.data),
-            nrPersoane: postEvent.nrPersoane,
-            idMeniu: postEvent.idMeniu,
-            pret: postEvent.pret,
-            avans: postEvent.avans,
-            plata: postEvent.plata,
-            image: postEvent.image,
-            uid: postEvent.uid,
-            id: String(res.data),
-          };
+          setEvents(evenimente);
+
           setLoading(false);
-          const newEvents = [...evenimente, newEvent];
-          setEvents(newEvents);
-
           navigation.goBack();
         })
         .catch(function (error) {
@@ -207,6 +147,39 @@ const Eveniment: FC<any> = ({navigation}) => {
     }
   };
 
+  const handleDeleteEvent = () => {
+    axios
+      .delete(BASE_URL + `eveniment/${eveniment.id}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + user.idToken,
+        },
+      })
+      .then(res => {
+        evenimente.splice(
+          evenimente.findIndex(
+            (event: EvenimentModel) => event.id === eveniment.id,
+          ),
+          1,
+        ),
+          setEvents(evenimente);
+        navigation.goBack();
+      })
+      .catch(function (error) {
+        if (error.response) {
+          console.log(error.response.data);
+          console.log(error.response.status);
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          console.log('Error', error.message);
+        }
+      });
+  };
+
+  const handleError = (error: string | null, input: string) => {
+    setErrors(prevState => ({...prevState, [input]: error}));
+  };
+
   return (
     <ScrollView
       keyboardShouldPersistTaps="handled"
@@ -215,68 +188,24 @@ const Eveniment: FC<any> = ({navigation}) => {
       <View style={styles.inputContainer}>
         <KeyboardAvoidingView style={styles.container} behavior="padding">
           <View style={styles.inputContainer}>
-            {/* ORGANIZATOR */}
-            <TextInput
-              placeholder="Organizator"
-              placeholderTextColor={'black'}
-              value={organizator}
-              onChangeText={text => setEventOrganizator(text)}
-              style={styles.input}
-              onFocus={() => handleError(null, 'organizator')}
-            />
-            {errors.organizator ? (
-              <Text style={{marginTop: 7, color: COLORS.red, fontSize: 12}}>
-                {errors.organizator}
-              </Text>
-            ) : null}
-
-            {/* NUME / TIP EVENIMENT */}
-            <View style={{padding: 5}}>
-              <SelectDropdown
-                defaultButtonText="Tip eveniment"
-                data={TIPURI_EVENIMENTE}
-                onSelect={(selectedItem, index) => {
-                  setEventNume(selectedItem.tip);
-                  handleError(null, 'nume');
-                }}
-                buttonStyle={styles.button}
-                buttonTextStyle={styles.buttonText}
-                buttonTextAfterSelection={(selectedItem, index) => {
-                  // text represented after item is selected
-                  // if data array is an array of objects then return selectedItem.property to render after item is selected
-                  return selectedItem.tip;
-                }}
-                rowTextForSelection={(item, index) => {
-                  // text represented for each item in dropdown
-                  // if data array is an array of objects then return item.property to represent item in dropdown
-                  return item.tip;
-                }}
-              />
-              {errors.nume ? (
-                <Text style={{marginTop: 7, color: COLORS.red, fontSize: 12}}>
-                  {errors.nume}
-                </Text>
-              ) : null}
-            </View>
-
             {/* DATA EVENIMENT */}
             <View style={styles.input}>
               <TouchableOpacity
                 onPress={() => setOpen(true)}
                 style={styles.button}>
-                <Text style={styles.buttonText}>Alege Data!</Text>
+                <Text style={styles.buttonText}>Modifică Data!</Text>
               </TouchableOpacity>
 
               <DatePicker
                 modal
                 mode="date"
-                minimumDate={new Date()}
                 textColor={'#9C89FF'}
+                minimumDate={new Date()}
                 open={open}
-                date={data}
+                date={eveniment.data}
                 onConfirm={date => {
+                  eveniment.data = date;
                   setOpen(false);
-                  setEventData(date);
                 }}
                 onCancel={() => {
                   setOpen(false);
@@ -290,7 +219,7 @@ const Eveniment: FC<any> = ({navigation}) => {
                     paddingTop: 10,
                   },
                 ]}>
-                <Text>Data: {formateazaDataToString(data)}</Text>
+                <Text>Data: {formateazaDataToString(eveniment.data)}</Text>
               </View>
 
               {errors.data ? (
@@ -304,9 +233,9 @@ const Eveniment: FC<any> = ({navigation}) => {
             <View style={styles.input}>
               <NumericInput
                 containerStyle={{alignSelf: 'center'}}
-                value={nrPersoane}
+                value={eveniment.nrPersoane}
                 onChange={value => {
-                  setEventNrPersoane(value);
+                  eveniment.nrPersoane = value;
                   handleError(null, 'nrPersoane');
                 }}
                 minValue={0}
@@ -323,7 +252,7 @@ const Eveniment: FC<any> = ({navigation}) => {
                 rightButtonBackgroundColor="#7E38B7"
               />
               <Text style={{paddingTop: 10, alignSelf: 'center'}}>
-                Număr Persoane: {nrPersoane}
+                Număr Persoane: {eveniment.nrPersoane}
               </Text>
               {errors.nrPersoane ? (
                 <Text style={{marginTop: 7, color: COLORS.red, fontSize: 12}}>
@@ -334,15 +263,17 @@ const Eveniment: FC<any> = ({navigation}) => {
 
             {/* MENIU */}
             <View style={{padding: 5}}>
-              {idMeniu ? (
-                <Text>Meniul Ales: {TIPURI_MENIU[idMeniu - 1].nume}</Text>
+              {eveniment.idMeniu ? (
+                <Text>
+                  Meniul Ales: {TIPURI_MENIU[eveniment.idMeniu - 1].nume}
+                </Text>
               ) : null}
 
               <SelectDropdown
-                defaultButtonText="Alege Meniul"
+                defaultButtonText="Modifică Meniul"
                 data={TIPURI_MENIU}
                 onSelect={(selectedItem, index) => {
-                  setEventIdMeniu(index + 1);
+                  eveniment.idMeniu = index + 1;
                   handleError(null, 'idMeniu');
                 }}
                 buttonStyle={styles.button}
@@ -367,16 +298,18 @@ const Eveniment: FC<any> = ({navigation}) => {
             </View>
 
             {/* PRET */}
-            {idMeniu ? (
+            {eveniment.idMeniu ? (
               <Text>
-                Pret meniu: {TIPURI_MENIU[idMeniu - 1].pret}{' '}
+                Pret meniu: {TIPURI_MENIU[eveniment.idMeniu - 1].pret}{' '}
                 <MaterialCommunityIcons name="account-cash-outline" size={18} />
               </Text>
             ) : null}
 
-            {nrPersoane !== 0 && idMeniu !== 0 ? (
+            {eveniment.nrPersoane !== 0 && eveniment.idMeniu !== 0 ? (
               <Text>
-                Pret Total: {nrPersoane * TIPURI_MENIU[idMeniu - 1].pret}{' '}
+                Pret Total:{' '}
+                {eveniment.nrPersoane *
+                  TIPURI_MENIU[eveniment.idMeniu - 1].pret}{' '}
                 <FontAwesome5 name="money-bill-alt" size={18} />
               </Text>
             ) : null}
@@ -384,20 +317,31 @@ const Eveniment: FC<any> = ({navigation}) => {
             <View style={styles.container}>
               <View style={styles.checkboxContainer}>
                 <CheckBox
-                  value={avans}
-                  onValueChange={setEventAvans}
+                  value={eveniment.avans}
+                  onValueChange={value => {
+                    eveniment.avans = value;
+                  }}
                   style={styles.checkbox}
                   tintColors={{true: '#541675', false: 'black'}}
                 />
                 <Text style={styles.label}>A fost achitat avansul?</Text>
-                <Text style={{paddingTop: 5}}> {avans ? '👍' : '👎'}</Text>
+                <Text style={{paddingTop: 5}}>
+                  {' '}
+                  {eveniment.avans ? '👍' : '👎'}
+                </Text>
               </View>
             </View>
           </View>
 
           <View style={styles.buttonContainer}>
-            <TouchableOpacity onPress={handleAddEvent} style={styles.button}>
-              <Text style={styles.buttonText}>Adaugă Eveniment!</Text>
+            <TouchableOpacity onPress={handleEditEvent} style={styles.button}>
+              <Text style={styles.buttonText}>Modifică Eveniment!</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={handleDeleteEvent}
+              style={styles.deleteButton}>
+              <Text style={styles.buttonText}>Anuleaza Eveniment!</Text>
             </TouchableOpacity>
           </View>
         </KeyboardAvoidingView>
@@ -406,7 +350,7 @@ const Eveniment: FC<any> = ({navigation}) => {
   );
 };
 
-export default Eveniment;
+export default DetaliiEvenimentScreen;
 
 const styles = StyleSheet.create({
   scrollView: {
@@ -439,6 +383,14 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: '#9C89FF',
+    width: '100%',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  deleteButton: {
+    backgroundColor: '#541675',
     width: '100%',
     padding: 15,
     borderRadius: 10,
