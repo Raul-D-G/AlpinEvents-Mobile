@@ -1,8 +1,6 @@
 import React, {FC} from 'react';
 import {StyleSheet} from 'react-native';
 
-import CalendarEScreen from './CalendarEScreen';
-
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import {createMaterialBottomTabNavigator} from '@react-navigation/material-bottom-tabs';
 

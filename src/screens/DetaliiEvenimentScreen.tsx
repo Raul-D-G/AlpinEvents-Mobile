@@ -7,6 +7,8 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Keyboard,
+  Image,
+  Alert,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
@@ -15,20 +17,24 @@ import DatePicker from 'react-native-date-picker';
 import {actionCreators, ApplicationState} from '../redux';
 import {bindActionCreators} from 'redux';
 import SelectDropdown from 'react-native-select-dropdown';
-import {BASE_URL, COLORS, TIPURI_MENIU} from '../utils/AppConst';
+import {
+  BASE_URL,
+  COLORS,
+  TIPURI_EVENIMENTE,
+  TIPURI_MENIU,
+} from '../utils/AppConst';
 import NumericInput from 'react-native-numeric-input';
 import CheckBox from '@react-native-community/checkbox';
 import {formateazaDataToString} from '../utils/Functions';
 import axios from 'axios';
 import {EvenimentModel} from '../redux/actions/evenimentActions';
 import Loader from '../components/Loader';
+import RNFS from 'react-native-fs';
 
 const DetaliiEvenimentScreen: FC<any> = ({route, navigation}) => {
   const dispatch = useDispatch();
-  const {setEventData, setEventPret, setEvent, setEvents} = bindActionCreators(
-    actionCreators,
-    dispatch,
-  );
+  const {setEventData, setEventPret, setEvent, setEvents, setEventImg} =
+    bindActionCreators(actionCreators, dispatch);
   const {evenimente} = useSelector(
     (state: ApplicationState) => state.evenimenteReducer,
   );
@@ -176,6 +182,52 @@ const DetaliiEvenimentScreen: FC<any> = ({route, navigation}) => {
       });
   };
 
+  function deleteImage() {
+    setLoading(true);
+    RNFS.unlink(eveniment.image)
+      .then(() => {
+        const index = evenimente.findIndex(event => event.id === eveniment.id);
+        if (index > -1) {
+          let newEvenimente = [...evenimente];
+
+          let img: string = '../../assets/nunta.jpg';
+          TIPURI_EVENIMENTE.forEach(event => {
+            if (event.tip === eveniment.nume) {
+              img = event.image;
+            }
+          });
+          newEvenimente[index].image = img;
+          eveniment.image = img;
+
+          let putEvent = newEvenimente[index];
+
+          axios
+            .put(BASE_URL + `eveniment/${eveniment.id}`, putEvent, {
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: 'Bearer ' + user.idToken,
+              },
+            })
+            .then(res => {
+              setEvents(newEvenimente);
+              setLoading(false);
+
+              Alert.alert('Succes!', 'Imaginea evenimentului a fost ștearsă!');
+            })
+            .catch(function (error) {
+              if (error.response) {
+                console.log(error.response.data);
+                console.log(error.response.status);
+              } else {
+                // Something happened in setting up the request that triggered an Error
+                console.log('Error', error.message);
+              }
+            });
+        }
+      })
+      .catch(err => console.log(err));
+  }
+
   const handleError = (error: string | null, input: string) => {
     setErrors(prevState => ({...prevState, [input]: error}));
   };
@@ -185,6 +237,13 @@ const DetaliiEvenimentScreen: FC<any> = ({route, navigation}) => {
       keyboardShouldPersistTaps="handled"
       contentContainerStyle={styles.scrollView}>
       <Loader visible={loading} />
+
+      {/* Detalii evenimet */}
+      <View>
+        <Text style={styles.titlu}>
+          {eveniment.organizator} organizează {eveniment.nume}
+        </Text>
+      </View>
       <View style={styles.inputContainer}>
         <KeyboardAvoidingView style={styles.container} behavior="padding">
           <View style={styles.inputContainer}>
@@ -333,16 +392,46 @@ const DetaliiEvenimentScreen: FC<any> = ({route, navigation}) => {
             </View>
           </View>
 
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity onPress={handleEditEvent} style={styles.button}>
+          <View style={styles.extra_row}>
+            <TouchableOpacity
+              onPress={handleEditEvent}
+              style={styles.extra_button}>
               <Text style={styles.buttonText}>Modifică Eveniment!</Text>
             </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.extra_button}
+              onPress={() => {
+                navigation.navigate('CameraScreen', {id: eveniment.id});
+              }}>
+              <FontAwesome5 name={'camera'} size={25} color={'#ffffff'} />
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.buttonContainer}>
+            {/* <TouchableOpacity onPress={handleEditEvent} style={styles.button}>
+              <Text style={styles.buttonText}>Modifică Eveniment!</Text>
+            </TouchableOpacity> */}
 
             <TouchableOpacity
               onPress={handleDeleteEvent}
               style={styles.deleteButton}>
               <Text style={styles.buttonText}>Anuleaza Eveniment!</Text>
             </TouchableOpacity>
+          </View>
+
+          <View>
+            {eveniment.image[0] !== '.' ? (
+              <View>
+                <Image style={styles.image} source={{uri: eveniment.image}} />
+                <TouchableOpacity
+                  style={styles.delete}
+                  onPress={() => {
+                    deleteImage();
+                  }}>
+                  <FontAwesome5 name={'trash'} size={25} color={'#ff3636'} />
+                </TouchableOpacity>
+              </View>
+            ) : null}
           </View>
         </KeyboardAvoidingView>
       </View>
@@ -410,5 +499,40 @@ const styles = StyleSheet.create({
   },
   label: {
     margin: 8,
+  },
+  titlu: {
+    fontSize: 18,
+    opacity: 0.7,
+    textAlign: 'center',
+  },
+  extra_row: {
+    flexDirection: 'row',
+    marginVertical: 10,
+  },
+  extra_button: {
+    flex: 1,
+    height: 50,
+    borderRadius: 10,
+    marginHorizontal: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#9C89FF',
+  },
+  delete: {
+    width: 50,
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    right: 20,
+    bottom: 20,
+    backgroundColor: '#ffffff80',
+    margin: 10,
+    borderRadius: 5,
+  },
+  image: {
+    width: 300,
+    height: 300,
+    margin: 20,
   },
 });

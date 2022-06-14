@@ -106,7 +106,36 @@ const ListaEvenimenteScreen: FC<any> = ({navigation}) => {
                     opacity,
                   },
                 ]}>
-                {item.nume === TIPURI_EVENIMENTE[0].tip ? (
+                <View
+                  style={[
+                    {
+                      backgroundColor:
+                        item.nrPersoane <= 300
+                          ? '#0ce846'
+                          : item.nrPersoane > 300 && item.nrPersoane <= 600
+                          ? '#f0f70c'
+                          : item.nrPersoane > 600
+                          ? '#e0115f'
+                          : '#0ce846',
+                    },
+                    styles.color,
+                  ]}
+                />
+                {item.image[0] !== '.' ? (
+                  <View>
+                    <Image style={styles.image} source={{uri: item.image}} />
+                  </View>
+                ) : item.nume === TIPURI_EVENIMENTE[0].tip ? (
+                  <Image source={nuntaImg} style={styles.image} />
+                ) : item.nume === TIPURI_EVENIMENTE[1].tip ? (
+                  <Image source={majoratImg} style={styles.image} />
+                ) : item.nume === TIPURI_EVENIMENTE[2].tip ? (
+                  <Image source={onomasticaImg} style={styles.image} />
+                ) : item.nume === TIPURI_EVENIMENTE[3].tip ? (
+                  <Image source={petrecereImg} style={styles.image} />
+                ) : null}
+
+                {/* {item.nume === TIPURI_EVENIMENTE[0].tip ? (
                   <Image source={nuntaImg} style={styles.image} />
                 ) : null}
 
@@ -120,7 +149,7 @@ const ListaEvenimenteScreen: FC<any> = ({navigation}) => {
 
                 {item.nume === TIPURI_EVENIMENTE[3].tip ? (
                   <Image source={petrecereImg} style={styles.image} />
-                ) : null}
+                ) : null} */}
 
                 <View>
                   <Text style={styles.nume}>{item.nume}</Text>
@@ -181,7 +210,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   data: {
-    fontSize: 18,
+    fontSize: 16,
     opacity: 0.7,
     fontFamily: 'DancingScript-VariableFont_wght',
   },
@@ -197,7 +226,7 @@ const styles = StyleSheet.create({
   },
   animatedView: {
     flexDirection: 'row',
-    padding: 18,
+    alignItems: 'center',
     marginBottom: 18,
     backgroundColor: 'white',
     borderRadius: 20,
@@ -210,10 +239,17 @@ const styles = StyleSheet.create({
     height: 70,
     borderRadius: 60,
     marginRight: 10,
+    marginLeft: 10,
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
     alignContent: 'center',
+  },
+  color: {
+    width: 20,
+    height: 100,
+    borderTopLeftRadius: 10,
+    borderBottomLeftRadius: 10,
   },
 });

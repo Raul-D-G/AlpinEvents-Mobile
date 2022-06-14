@@ -174,8 +174,6 @@ const Eveniment: FC<any> = ({navigation}) => {
           },
         })
         .then(res => {
-          console.log(res.data);
-
           const newEvent: EvenimentModel = {
             organizator: postEvent.organizator,
             nume: postEvent.nume,

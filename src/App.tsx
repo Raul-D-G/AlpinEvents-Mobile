@@ -23,6 +23,7 @@ import {store} from './redux';
 import {LogBox} from 'react-native';
 
 LogBox.ignoreLogs([
+  "ViewPropTypes will be removed from React Native. Migrate to ViewPropTypes exported from 'deprecated-react-native-prop-types'.",
   'Non-serializable values were found in the navigation state',
 ]);
 

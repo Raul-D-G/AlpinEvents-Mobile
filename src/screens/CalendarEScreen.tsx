@@ -1,21 +1,14 @@
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {Image, StyleSheet} from 'react-native';
 import React, {FC, useEffect} from 'react';
 import auth from '@react-native-firebase/auth';
 import {bindActionCreators} from 'redux';
 import {actionCreators, ApplicationState} from '../redux';
 import {useDispatch, useSelector} from 'react-redux';
-import {Calendar, CalendarList, LocaleConfig} from 'react-native-calendars';
+import {Calendar, LocaleConfig} from 'react-native-calendars';
 import {DAYS, MONTHS} from '../utils/AppConst';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {EvenimentModel} from '../redux/actions/evenimentActions';
-import {MarkingProps} from 'react-native-calendars/src/calendar/day/marking';
 import {MarkerModel} from '../redux/actions/CalendarActions';
+import BG_IMG from '../../assets/logoApp-removebg-preview.png';
 
 const timeToString = (time: Date) => {
   const date = new Date(time);
@@ -105,6 +98,7 @@ const CalendarEScreen: FC<any> = ({route, navigation}) => {
     // </View>
 
     <SafeAreaView style={styles.container}>
+      <Image source={BG_IMG} style={styles.logo}></Image>
       <Calendar
         markedDates={marker}
         style={{
@@ -172,5 +166,10 @@ const styles = StyleSheet.create({
   },
   text: {
     color: 'black',
+  },
+  logo: {
+    position: 'absolute',
+    top: 400,
+    left: 150,
   },
 });

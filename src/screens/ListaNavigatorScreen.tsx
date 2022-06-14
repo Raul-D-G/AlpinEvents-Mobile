@@ -4,11 +4,13 @@ import {createStackNavigator} from '@react-navigation/stack';
 import ListaEvenimenteScreen from './ListaEvenimenteScreen';
 import AddEvenimentScreen from './AddEvenimentScreen';
 import DetaliiEvenimentScreen from './DetaliiEvenimentScreen';
+import CameraScreen from './CameraScreen';
 
 type ListaEStackParamList = {
   AddEvenimentScreen: undefined;
   ListaEvenimenteScreen: undefined;
   DetaliiEvenimentScreen: undefined;
+  CameraScreen: undefined;
 };
 const Stack = createStackNavigator<ListaEStackParamList>();
 
@@ -34,6 +36,14 @@ const ListaNavigatorScreen: FC<any> = ({navigation}) => {
       <Stack.Screen
         name="DetaliiEvenimentScreen"
         component={DetaliiEvenimentScreen}
+        options={{
+          header: () => null,
+        }}
+      />
+
+      <Stack.Screen
+        name="CameraScreen"
+        component={CameraScreen}
         options={{
           header: () => null,
         }}
