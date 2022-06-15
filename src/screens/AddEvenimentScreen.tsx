@@ -1,4 +1,4 @@
-import React, {useState, FC} from 'react';
+import React, {useState, FC, useEffect} from 'react';
 import {
   StyleSheet,
   Text,
@@ -24,12 +24,12 @@ import {
 } from '../utils/AppConst';
 import NumericInput from 'react-native-numeric-input';
 import CheckBox from '@react-native-community/checkbox';
-import {formateazaDataToString} from '../utils/Functions';
+import {formateazaDataToString, verificaData} from '../utils/Functions';
 import axios from 'axios';
 import {EvenimentModel} from '../redux/actions/evenimentActions';
 import Loader from '../components/Loader';
 
-const Eveniment: FC<any> = ({navigation}) => {
+const Eveniment: FC<any> = ({route, navigation}) => {
   const dispatch = useDispatch();
   const {
     setEventOrganizator,
@@ -105,6 +105,13 @@ const Eveniment: FC<any> = ({navigation}) => {
       setIsValid(false);
       valid = false;
     }
+    if (!verificaData(evenimente, data)) {
+      handleError('Data aleasă este ocupată', 'data');
+      setEventData(new Date());
+      setIsValid(false);
+      valid = false;
+    }
+
     return valid;
   };
 
@@ -205,6 +212,17 @@ const Eveniment: FC<any> = ({navigation}) => {
     }
   };
 
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      if (route.params && route.params.data) {
+        setEventData(route.params.data);
+      }
+    });
+
+    // Return the function to unsubscribe from the event so it gets removed on unmount
+    return unsubscribe;
+  }, [navigation, route]);
+
   return (
     <ScrollView
       keyboardShouldPersistTaps="handled"
@@ -273,8 +291,14 @@ const Eveniment: FC<any> = ({navigation}) => {
                 open={open}
                 date={data}
                 onConfirm={date => {
+                  if (!verificaData(evenimente, date)) {
+                    handleError('Data aleasă este ocupată', 'data');
+                    setEventData(new Date());
+                    setIsValid(false);
+                  } else {
+                    setEventData(date);
+                  }
                   setOpen(false);
-                  setEventData(date);
                 }}
                 onCancel={() => {
                   setOpen(false);

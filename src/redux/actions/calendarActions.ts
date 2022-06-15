@@ -1,5 +1,4 @@
 import {EvenimentModel} from './evenimentActions';
-import {MarkingProps} from 'react-native-calendars/src/calendar/day/marking';
 import {ActionType} from '../action-type/index';
 
 export interface MarkerModel {

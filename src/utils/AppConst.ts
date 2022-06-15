@@ -53,6 +53,31 @@ export const MONTHS = [
   'Decembrie',
 ];
 
+export const MONTHS_SHORT = [
+  'Ian.',
+  'Feb.',
+  'Mar',
+  'Apr',
+  'Mai',
+  'Iun',
+  'Iul.',
+  'Aug',
+  'Sept.',
+  'Oct.',
+  'Nov.',
+  'Dec.',
+];
+
+export const DAYS_SHORT = [
+  'Dum.',
+  'Lun.',
+  'Mar.',
+  'Mie.',
+  'Joi.',
+  'Vin.',
+  'Sam.',
+];
+
 export const DAYS = [
   'Duminică',
   'Luni',

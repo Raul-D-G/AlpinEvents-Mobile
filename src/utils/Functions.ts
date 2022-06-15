@@ -1,3 +1,4 @@
+import {EvenimentModel} from './../redux/actions/evenimentActions';
 import {MONTHS, DAYS} from './AppConst';
 import NetInfo from '@react-native-community/netinfo';
 
@@ -14,4 +15,15 @@ export const formateazaDataToString = (data: Date) => {
   const dayName = DAYS[data.getDay()];
 
   return `${dayName}, ${date} ${monthName} ${year}`;
+};
+
+export const verificaData = (evenimente: EvenimentModel[], data: Date) => {
+  let ok = true;
+
+  evenimente.forEach(eveniment => {
+    if (eveniment.data.getDate() === data.getDate()) {
+      ok = false;
+    }
+  });
+  return ok;
 };

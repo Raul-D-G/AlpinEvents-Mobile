@@ -4,7 +4,7 @@ import {bindActionCreators} from 'redux';
 import {actionCreators, ApplicationState} from '../redux';
 import {useDispatch, useSelector} from 'react-redux';
 import {Calendar, LocaleConfig} from 'react-native-calendars';
-import {DAYS, MONTHS} from '../utils/AppConst';
+import {DAYS, DAYS_SHORT, MONTHS, MONTHS_SHORT} from '../utils/AppConst';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {MarkerModel} from '../redux/actions/CalendarActions';
 import BG_IMG from '../../assets/logoApp-removebg-preview.png';
@@ -18,22 +18,9 @@ const timeToString = (time: Date) => {
 const CalendarEScreen: FC<any> = ({route, navigation}) => {
   LocaleConfig.locales['ro'] = {
     monthNames: MONTHS,
-    monthNamesShort: [
-      'Ian.',
-      'Feb.',
-      'Mar',
-      'Apr',
-      'Mai',
-      'Iun',
-      'Iul.',
-      'Aug',
-      'Sept.',
-      'Oct.',
-      'Nov.',
-      'Dec.',
-    ],
+    monthNamesShort: MONTHS_SHORT,
     dayNames: DAYS,
-    dayNamesShort: ['Dum.', 'Lun.', 'Mar.', 'Mie.', 'Joi.', 'Vin.', 'Sam.'],
+    dayNamesShort: DAYS_SHORT,
     today: 'Astăzi',
   };
   LocaleConfig.defaultLocale = 'ro';
@@ -50,7 +37,9 @@ const CalendarEScreen: FC<any> = ({route, navigation}) => {
   );
 
   const verificaData = () => {
-    navigation.navigate('');
+    navigation.navigate('VerificareDataScreen', {
+      evenimente: evenimente,
+    });
   };
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -64,13 +53,23 @@ const CalendarEScreen: FC<any> = ({route, navigation}) => {
           dotColor = '#e0115f';
         }
 
-        markedDate[timeToString(eveniment.data)] = {
-          selected: true,
-          marked: true,
-          selectedColor: '#9C89FF',
-          dotColor: dotColor,
-          eveniment: eveniment,
-        };
+        if (eveniment.data.getDate() === new Date().getDate()) {
+          markedDate[timeToString(eveniment.data)] = {
+            selected: true,
+            marked: true,
+            selectedColor: '#ff1717',
+            dotColor: dotColor,
+            eveniment: eveniment,
+          };
+        } else {
+          markedDate[timeToString(eveniment.data)] = {
+            selected: true,
+            marked: true,
+            selectedColor: '#9C89FF',
+            dotColor: dotColor,
+            eveniment: eveniment,
+          };
+        }
       });
 
       setMarker(markedDate);
@@ -117,7 +116,9 @@ const CalendarEScreen: FC<any> = ({route, navigation}) => {
         }}
         // Handler which gets executed on day long press. Default = undefined
         onDayLongPress={day => {
-          console.log('selected day', day);
+          navigation.navigate('AddEvenimentScreen', {
+            data: new Date(day.dateString),
+          });
         }}
         // Month format in calendar title. Formatting values: http://arshaw.com/xdate/#Formatting
         monthFormat={'MMMM yyyy'}
@@ -140,7 +141,7 @@ const CalendarEScreen: FC<any> = ({route, navigation}) => {
           name="calendar-alt"
           size={30}
           color="#01a699"
-          onPressIn={verificaData}
+          onPress={verificaData}
         />
       </TouchableOpacity>
     </SafeAreaView>
