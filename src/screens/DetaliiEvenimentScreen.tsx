@@ -1,4 +1,4 @@
-import React, {useState, FC, useEffect} from 'react';
+import React, {useState, FC} from 'react';
 import {
   StyleSheet,
   Text,
@@ -10,6 +10,8 @@ import {
   Image,
   Alert,
 } from 'react-native';
+import Share from 'react-native-share';
+
 import {useDispatch, useSelector} from 'react-redux';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -30,6 +32,8 @@ import axios from 'axios';
 import {EvenimentModel} from '../redux/actions/evenimentActions';
 import Loader from '../components/Loader';
 import RNFS from 'react-native-fs';
+
+import filesBase64 from '../../assets/filesBase64';
 
 const DetaliiEvenimentScreen: FC<any> = ({route, navigation}) => {
   const dispatch = useDispatch();
@@ -198,6 +202,7 @@ const DetaliiEvenimentScreen: FC<any> = ({route, navigation}) => {
           });
           newEvenimente[index].image = img;
           eveniment.image = img;
+          setEventImg(img);
 
           let putEvent = newEvenimente[index];
 
@@ -230,6 +235,33 @@ const DetaliiEvenimentScreen: FC<any> = ({route, navigation}) => {
 
   const handleError = (error: string | null, input: string) => {
     setErrors(prevState => ({...prevState, [input]: error}));
+  };
+
+  const myCustomShare = async () => {
+    let img = filesBase64.default;
+
+    if (eveniment.nume === TIPURI_EVENIMENTE[1].tip) {
+      img = filesBase64.majorat;
+    } else if (eveniment.nume === TIPURI_EVENIMENTE[2].tip) {
+      img = filesBase64.onomastica;
+    } else if (eveniment.nume === TIPURI_EVENIMENTE[3].tip) {
+      img = filesBase64.petrecere;
+    }
+
+    const shareOptions = {
+      message: `${eveniment.organizator} organizează ${eveniment.nume}
+      Data evenimentului: ${formateazaDataToString(eveniment.data)}
+      Numărul de invitați: ${eveniment.nrPersoane}
+      Meniul Ales: ${TIPURI_MENIU[eveniment.idMeniu - 1].nume}`,
+      url: img,
+    };
+
+    try {
+      const ShareResponse = await Share.open(shareOptions);
+      console.log(JSON.stringify(ShareResponse));
+    } catch (error) {
+      console.log('Error => ', error);
+    }
   };
 
   return (
@@ -396,7 +428,7 @@ const DetaliiEvenimentScreen: FC<any> = ({route, navigation}) => {
             <TouchableOpacity
               onPress={handleEditEvent}
               style={styles.extra_button}>
-              <Text style={styles.buttonText}>Modifică Eveniment!</Text>
+              <Text style={styles.buttonText}>Salvează!</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.extra_button}
@@ -404,6 +436,12 @@ const DetaliiEvenimentScreen: FC<any> = ({route, navigation}) => {
                 navigation.navigate('CameraScreen', {id: eveniment.id});
               }}>
               <FontAwesome5 name={'camera'} size={25} color={'#ffffff'} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.extra_button}
+              onPressIn={myCustomShare}>
+              <Text style={{color: '#ffffff'}}>Distribuie</Text>
+              <FontAwesome5 name={'share'} size={25} color={'#ffffff'} />
             </TouchableOpacity>
           </View>
 
@@ -415,7 +453,7 @@ const DetaliiEvenimentScreen: FC<any> = ({route, navigation}) => {
             <TouchableOpacity
               onPress={handleDeleteEvent}
               style={styles.deleteButton}>
-              <Text style={styles.buttonText}>Anuleaza Eveniment!</Text>
+              <Text style={styles.buttonText}>Anulează Evenimentul!</Text>
             </TouchableOpacity>
           </View>
 
@@ -487,7 +525,6 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: 'white',
-    fontWeight: '700',
     fontSize: 16,
   },
   checkboxContainer: {

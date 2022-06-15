@@ -1,9 +1,9 @@
 import {StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
-import CalendarEScreen from './CalendarEScreen';
-import DetaliiEvenimentScreen from './DetaliiEvenimentScreen';
-import CameraScreen from './CameraScreen';
+import CalendarEScreen from '../CalendarEScreen';
+import DetaliiEvenimentScreen from '../DetaliiEvenimentScreen';
+import CameraScreen from '../CameraScreen';
 
 type CalendarStackParamList = {
   CalendarEScreen: undefined;

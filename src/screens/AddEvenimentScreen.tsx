@@ -304,18 +304,21 @@ const Eveniment: FC<any> = ({navigation}) => {
                 containerStyle={{alignSelf: 'center'}}
                 value={nrPersoane}
                 onChange={value => {
-                  setEventNrPersoane(value);
+                  if (value <= 1000) setEventNrPersoane(value);
                   handleError(null, 'nrPersoane');
                 }}
                 minValue={0}
                 maxValue={1000}
-                onLimitReached={(isMax, msg) => console.log(isMax, msg)}
+                onLimitReached={(isMax, msg) => {
+                  console.log(isMax, msg);
+                  // Alert.alert('Atenție!', 'Limita de invitați a fost atinsă!');
+                  // handleError('Salvează numărul de invitați', 'nrPersoane');
+                }}
                 totalWidth={240}
                 totalHeight={50}
                 iconSize={25}
                 step={10}
-                valueType="real"
-                rounded
+                valueType="integer"
                 textColor="#9C89FF"
                 leftButtonBackgroundColor="#99CCED"
                 rightButtonBackgroundColor="#7E38B7"

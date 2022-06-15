@@ -4,11 +4,10 @@ import LoginScreen from './screens/LoginScreen';
 
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-import MainScreen from './screens/MainScreen';
 
-export type RootStackParamList = {
+type RootStackParamList = {
   LoginScreen: undefined;
-  MainScreen: undefined;
+  MainNavigator: undefined;
 };
 
 import SplashScreen from 'react-native-splash-screen';
@@ -21,10 +20,12 @@ import {Provider} from 'react-redux';
 import {store} from './redux';
 
 import {LogBox} from 'react-native';
+import MainNavigator from './screens/navigatoare/MainNavigator';
 
 LogBox.ignoreLogs([
   "ViewPropTypes will be removed from React Native. Migrate to ViewPropTypes exported from 'deprecated-react-native-prop-types'.",
   'Non-serializable values were found in the navigation state',
+  'Warning: Failed prop type: Invalid prop `value` of type `string` supplied to `NumericInput`, expected `number`',
 ]);
 
 const App = () => {
@@ -72,8 +73,8 @@ const App = () => {
             }}
           />
           <Stack.Screen
-            name="MainScreen"
-            component={MainScreen}
+            name="MainNavigator"
+            component={MainNavigator}
             options={{
               header: () => null,
             }}

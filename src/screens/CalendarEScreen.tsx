@@ -1,6 +1,5 @@
-import {Image, StyleSheet} from 'react-native';
+import {Image, StyleSheet, TouchableOpacity} from 'react-native';
 import React, {FC, useEffect} from 'react';
-import auth from '@react-native-firebase/auth';
 import {bindActionCreators} from 'redux';
 import {actionCreators, ApplicationState} from '../redux';
 import {useDispatch, useSelector} from 'react-redux';
@@ -9,6 +8,7 @@ import {DAYS, MONTHS} from '../utils/AppConst';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {MarkerModel} from '../redux/actions/CalendarActions';
 import BG_IMG from '../../assets/logoApp-removebg-preview.png';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 const timeToString = (time: Date) => {
   const date = new Date(time);
@@ -39,8 +39,7 @@ const CalendarEScreen: FC<any> = ({route, navigation}) => {
   LocaleConfig.defaultLocale = 'ro';
 
   const dispatch = useDispatch();
-  const {setEmail, setPassword, onLogin, setEvents, setMarker} =
-    bindActionCreators(actionCreators, dispatch);
+  const {setMarker} = bindActionCreators(actionCreators, dispatch);
 
   const {evenimente} = useSelector(
     (state: ApplicationState) => state.evenimenteReducer,
@@ -49,17 +48,9 @@ const CalendarEScreen: FC<any> = ({route, navigation}) => {
   const {marker} = useSelector(
     (state: ApplicationState) => state.calendarReducer,
   );
-  const handleSignOut = () => {
-    auth()
-      .signOut()
-      .then(() => {
-        onLogin('', '', '', '');
-        setEmail('');
-        setPassword('');
-        setEvents([]);
-        navigation.replace('LoginScreen');
-      })
-      .catch((error: {message: any}) => console.log(error.message));
+
+  const verificaData = () => {
+    navigation.navigate('');
   };
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -90,13 +81,6 @@ const CalendarEScreen: FC<any> = ({route, navigation}) => {
   }, [navigation, evenimente]);
 
   return (
-    // <View style={styles.container}>
-    //   <Text style={styles.text}>Email: {auth().currentUser?.email}</Text>
-    //   <TouchableOpacity onPress={handleSignOut} style={styles.button}>
-    //     <Text style={styles.buttonText}>Sign out</Text>
-    //   </TouchableOpacity>
-    // </View>
-
     <SafeAreaView style={styles.container}>
       <Image source={BG_IMG} style={styles.logo}></Image>
       <Calendar
@@ -106,6 +90,17 @@ const CalendarEScreen: FC<any> = ({route, navigation}) => {
           borderColor: 'gray',
           // height: 350,
           // width: '100%',
+        }}
+        theme={{
+          backgroundColor: '#ffffff',
+          calendarBackground: '#ffffff',
+          textSectionTitleColor: '#b6c1cd',
+          // selectedDayBackgroundColor: '#00adf5',
+          // selectedDayTextColor: '#ffffff',
+          todayTextColor: '#ffffff',
+          todayBackgroundColor: '#ff82f9',
+          // dayTextColor: '#de4d41',
+          // textDisabledColor: '#d9e1e8',
         }}
         current={timeToString(new Date())}
         pastScrollRange={50}
@@ -139,6 +134,15 @@ const CalendarEScreen: FC<any> = ({route, navigation}) => {
         // Enable the option to swipe between months. Default = false
         enableSwipeMonths={true}
       />
+
+      <TouchableOpacity style={styles.button}>
+        <FontAwesome5
+          name="calendar-alt"
+          size={30}
+          color="#01a699"
+          onPressIn={verificaData}
+        />
+      </TouchableOpacity>
     </SafeAreaView>
   );
 };
@@ -151,25 +155,22 @@ const styles = StyleSheet.create({
     // justifyContent: 'center',
     paddingTop: 41,
   },
-  button: {
-    backgroundColor: '#0782F9',
-    width: '60%',
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginTop: 40,
-  },
-  buttonText: {
-    color: 'white',
-    fontWeight: '700',
-    fontSize: 16,
-  },
-  text: {
-    color: 'black',
-  },
   logo: {
     position: 'absolute',
     top: 400,
     left: 150,
+  },
+  button: {
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 70,
+    position: 'absolute',
+    bottom: 10,
+    left: 10,
+    height: 70,
+    backgroundColor: '#fff',
+    borderRadius: 100,
   },
 });

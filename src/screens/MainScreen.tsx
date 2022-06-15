@@ -1,5 +1,5 @@
 import React, {FC, useEffect, useRef} from 'react';
-import {Animated, Dimensions, View} from 'react-native';
+import {Animated, Dimensions, View, TouchableOpacity} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 // Logo....
@@ -97,19 +97,24 @@ const MainScreen: FC<any> = ({navigation}) => {
             alignItems: 'center',
             justifyContent: 'center',
           }}>
-          <Animated.Image
-            source={logo}
-            style={{
-              width: 100,
-              height: 100,
-              marginBottom: 20,
-              borderRadius: 30,
-              transform: [
-                {translateX: moveLogo.x},
-                {translateY: moveLogo.y},
-                {scale: scaleLogo},
-              ],
-            }}></Animated.Image>
+          <TouchableOpacity
+            onPressIn={() => {
+              navigation.navigate('LogOutScreen');
+            }}>
+            <Animated.Image
+              source={logo}
+              style={{
+                width: 100,
+                height: 100,
+                marginBottom: 20,
+                borderRadius: 30,
+                transform: [
+                  {translateX: moveLogo.x},
+                  {translateY: moveLogo.y},
+                  {scale: scaleLogo},
+                ],
+              }}></Animated.Image>
+          </TouchableOpacity>
 
           <Animated.Text
             style={{

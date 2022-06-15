@@ -4,8 +4,8 @@ import {StyleSheet} from 'react-native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import {createMaterialBottomTabNavigator} from '@react-navigation/material-bottom-tabs';
 
-import ListaNavigatorScreen from './ListaNavigatorScreen';
-import CalendarNavigatorScreen from './CalendarNavigatorScreen';
+import ListaNavigatorScreen from './navigatoare/ListaNavigatorScreen';
+import CalendarNavigatorScreen from './navigatoare/CalendarNavigatorScreen';
 
 const Tab = createMaterialBottomTabNavigator();
 

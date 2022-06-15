@@ -1,10 +1,10 @@
 import {StyleSheet} from 'react-native';
 import React, {FC} from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
-import ListaEvenimenteScreen from './ListaEvenimenteScreen';
-import AddEvenimentScreen from './AddEvenimentScreen';
-import DetaliiEvenimentScreen from './DetaliiEvenimentScreen';
-import CameraScreen from './CameraScreen';
+import ListaEvenimenteScreen from '../ListaEvenimenteScreen';
+import AddEvenimentScreen from '../AddEvenimentScreen';
+import DetaliiEvenimentScreen from '../DetaliiEvenimentScreen';
+import CameraScreen from '../CameraScreen';
 
 type ListaEStackParamList = {
   AddEvenimentScreen: undefined;

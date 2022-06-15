@@ -1,12 +1,5 @@
 import React, {FC} from 'react';
-import {
-  StyleSheet,
-  View,
-  Button,
-  Image,
-  TouchableOpacity,
-  Text,
-} from 'react-native';
+import {StyleSheet, View, Image, TouchableOpacity, Text} from 'react-native';
 
 import image from '../../assets/no_connections.png';
 

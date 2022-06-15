@@ -1,4 +1,4 @@
-import React, {useEffect, FC} from 'react';
+import React, {useEffect, FC, useState} from 'react';
 import {
   KeyboardAvoidingView,
   StyleSheet,
@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   View,
   Alert,
+  Keyboard,
 } from 'react-native';
 
 import auth from '@react-native-firebase/auth';
@@ -17,6 +18,7 @@ import {useDispatch, useSelector} from 'react-redux';
 
 import {actionCreators, ApplicationState} from '../redux';
 import {bindActionCreators} from 'redux';
+import {COLORS} from '../utils/AppConst';
 
 const LoginScreen: FC<any> = ({navigation}) => {
   const {email, password} = useSelector(
@@ -30,13 +32,44 @@ const LoginScreen: FC<any> = ({navigation}) => {
     dispatch,
   );
 
+  const [errors, setErrors] = useState({
+    email: null,
+    password: null,
+  });
+  const [isValid, setIsValid] = useState(false);
+
+  const handleError = (error: string | null, input: string) => {
+    setErrors(prevState => ({...prevState, [input]: error}));
+  };
+  const validate = () => {
+    Keyboard.dismiss();
+    let valid = true;
+
+    setIsValid(true);
+
+    if (email === '') {
+      handleError('Email incorect', 'email');
+      setEmail('');
+      setIsValid(false);
+      valid = false;
+    }
+    if (password === '') {
+      handleError('Parolă incorectă', 'password');
+      setPassword('');
+      setIsValid(false);
+      valid = false;
+    }
+
+    return valid;
+  };
+
   useEffect(() => {
     const unsubscribe = auth().onAuthStateChanged(async (user: any) => {
       if (user) {
         const idToken = await user.getIdToken(true);
         onLogin(user.email, user.displayName, user.uid, idToken);
         getEvents(user.uid, idToken);
-        navigation.replace('MainScreen');
+        navigation.replace('MainNavigator');
       }
     });
 
@@ -49,10 +82,11 @@ const LoginScreen: FC<any> = ({navigation}) => {
   }, []);
 
   const handleSignUp = () => {
+    validate();
     if (!email) {
       Alert.alert(
-        'Atentie!',
-        'Trebuie sa introduceti o adresa de email valida',
+        'Atenție!',
+        'Trebuie să introduceți o adresă de email validă!',
         [
           {
             text: 'Ok',
@@ -63,28 +97,33 @@ const LoginScreen: FC<any> = ({navigation}) => {
           },
         ],
       );
+    } else {
+      auth()
+        .createUserWithEmailAndPassword(email, password)
+        .then((userCredentials: {user: any}) => {
+          const user = userCredentials.user;
+          console.log('Registered with:', user.email);
+        })
+        .catch((error: {message: any}) => console.log(error));
     }
-
-    auth()
-      .createUserWithEmailAndPassword(email, password)
-      .then((userCredentials: {user: any}) => {
-        const user = userCredentials.user;
-        console.log('Registered with:', user.email);
-      })
-      .catch((error: {message: any}) => console.log(error));
   };
 
   const handleLogin = () => {
+    validate();
     if (!email) {
-      Alert.alert('Atentie!', 'Trebuie sa introduceti o adresa de email', [
-        {
-          text: 'Ok',
-          onPress: () => {
-            setEmail('');
-            setPassword('');
+      Alert.alert(
+        'Atenție!',
+        'Trebuie să introduceți o adresă de email validă!',
+        [
+          {
+            text: 'Ok',
+            onPress: () => {
+              setEmail('');
+              setPassword('');
+            },
           },
-        },
-      ]);
+        ],
+      );
     } else {
       auth()
         .signInWithEmailAndPassword(email, password)
@@ -110,7 +149,7 @@ const LoginScreen: FC<any> = ({navigation}) => {
             ]);
           }
           Alert.alert(
-            'Atentie!',
+            'Atenție!',
             error.message.slice(error.message.lastIndexOf(']') + 1),
             [
               {
@@ -148,7 +187,13 @@ const LoginScreen: FC<any> = ({navigation}) => {
             value={email}
             onChangeText={text => setEmail(text)}
             style={styles.input}
+            onFocus={() => handleError(null, 'email')}
           />
+          {errors.email ? (
+            <Text style={{marginTop: 7, color: COLORS.red, fontSize: 12}}>
+              {errors.email}
+            </Text>
+          ) : null}
           <TextInput
             placeholder="Password"
             placeholderTextColor={'black'}
@@ -156,7 +201,13 @@ const LoginScreen: FC<any> = ({navigation}) => {
             onChangeText={text => setPassword(text)}
             style={styles.input}
             secureTextEntry
+            onFocus={() => handleError(null, 'password')}
           />
+          {errors.password ? (
+            <Text style={{marginTop: 7, color: COLORS.red, fontSize: 12}}>
+              {errors.password}
+            </Text>
+          ) : null}
         </View>
 
         <View style={styles.buttonContainer}>
